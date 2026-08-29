@@ -10,8 +10,6 @@ public class RunnerManager : MonoBehaviour
     public int laps = 0;
     public float stoppingDistance = 2;
 
-    public int RunnerID;
-
     public int CurrentTarget;
 
     public float CheckpointsCleared;

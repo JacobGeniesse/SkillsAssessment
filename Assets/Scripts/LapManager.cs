@@ -20,7 +20,7 @@ public class LapManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(GameObject.Find("Laps").TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI lapsText))
+        if(GameObject.Find("Placements").TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI lapsText))
         {
             placementText = lapsText;
         }
@@ -64,12 +64,12 @@ public class LapManager : MonoBehaviour
         {
             if (RunningComponents[TargetRunner].laps > RunningComponents[i].laps)
             {
-                PlacementScores[TargetRunner] += 10f;
+                PlacementScores[TargetRunner] += 100f;
             }
 
             if (RunningComponents[TargetRunner].CheckpointsCleared > RunningComponents[i].CheckpointsCleared)
             {
-                PlacementScores[TargetRunner] += 5f;
+                PlacementScores[TargetRunner] += 10f;
             }
 
             if (RunningComponents[TargetRunner].distanceToTarget > RunningComponents[i].distanceToTarget)
