@@ -32,7 +32,7 @@ public class RunnerManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError(agent.name + "is having problems with checkpoints!");
+            Debug.LogError(agent.name + " is having problems with checkpoints!");
         }
 
         CheckpointsCleared = (float)(CurrentTarget - 1) / (float)(Checkpoints.Count);
@@ -52,18 +52,25 @@ public class RunnerManager : MonoBehaviour
 
     private void NewCheckpoint()
     {
-        if (CurrentTarget < Checkpoints.Count)
+        if(Checkpoints.Count > 0)
         {
-            agent.SetDestination(Checkpoints[CurrentTarget].position);
-            CheckpointsCleared = (float)CurrentTarget / (float)(Checkpoints.Count - 1);
-            CurrentTarget++;
+            if (CurrentTarget < Checkpoints.Count)
+            {
+                agent.SetDestination(Checkpoints[CurrentTarget].position);
+                CheckpointsCleared = (float)CurrentTarget / (float)(Checkpoints.Count - 1);
+                CurrentTarget++;
+            }
+            else
+            {
+                CheckpointsCleared = (float)CurrentTarget / (float)(Checkpoints.Count - 1);
+                CurrentTarget = 0;
+                agent.SetDestination(Checkpoints[CurrentTarget].position);
+                laps++;
+            }
         }
         else
         {
-            CheckpointsCleared = (float)CurrentTarget / (float)(Checkpoints.Count - 1);
-            CurrentTarget = 0;
-            agent.SetDestination(Checkpoints[CurrentTarget].position);
-            laps++;
+            Debug.LogError(agent.name + " has no checkpoints!");
         }
     }
 }
