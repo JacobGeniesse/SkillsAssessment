@@ -33,6 +33,7 @@ public class LapManager : MonoBehaviour
         {
             CurrentPlacements.Add(Runners[i]);
             PlacementScores.Add(0);
+
             if(Runners[i].TryGetComponent<RunnerManager>(out RunnerManager holdingCell))
             {
                 RunningComponents.Add(holdingCell);
@@ -82,11 +83,11 @@ public class LapManager : MonoBehaviour
     {
         CurrentPlacements.Clear();
         CurrentPlacements.Add(Runners[0]);
-        for(int i = 1; i < Runners.Count; i++)
+        for(int i = 1; i < PlacementScores.Count; i++)
         {
             for(int j = 1; j < Runners.Count; j++)
             {
-                if (PlacementScores[RunningComponents[i].RunnerID] > PlacementScores[j - 1])
+                if (PlacementScores[i] > PlacementScores[j - 1])
                 {
                     if(j - 1 < CurrentPlacements.Count - 1)
                     {
