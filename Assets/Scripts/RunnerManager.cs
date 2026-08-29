@@ -1,27 +1,42 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class RunnerManager : MonoBehaviour
 {
-    private int laps = 0;
+    public int laps = 0;
     public float stoppingDistance = 2;
 
-    private int CurrentTarget;
-    public List<Transform> UnclearedCheckpoints = new List<Transform>();
+    public int RunnerID;
+
+    public int CurrentTarget;
+
+    public float CheckpointsCleared;
+
+    public float distanceToTarget; //Used for placement calc
+
+    public List<Transform> Checkpoints = new List<Transform>();
 
     public NavMeshAgent agent;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (UnclearedCheckpoints[0] != null && agent != null)
+        if (Checkpoints.Count > 0 && Checkpoints[0] != null && agent != null)
         {
-            agent.SetDestination(UnclearedCheckpoints[0].position);
-            CurrentTarget = 1;
+            agent.SetDestination(Checkpoints[0].position);
+            CurrentTarget = 0;
         }
+        else
+        {
+            Debug.LogError(agent.name + "is having problems with checkpoints!");
+        }
+
+        CheckpointsCleared = (float)(CurrentTarget - 1) / (float)(Checkpoints.Count);
+        distanceToTarget = agent.remainingDistance;
     }
 
     // Update is called once per frame
@@ -31,19 +46,23 @@ public class RunnerManager : MonoBehaviour
         {
             NewCheckpoint();
         }
+
+        distanceToTarget = agent.remainingDistance;
     }
 
     private void NewCheckpoint()
     {
-        if (CurrentTarget < UnclearedCheckpoints.Count)
+        if (CurrentTarget < Checkpoints.Count)
         {
-                agent.SetDestination(UnclearedCheckpoints[CurrentTarget].position);
+            agent.SetDestination(Checkpoints[CurrentTarget].position);
+            CheckpointsCleared = (float)CurrentTarget / (float)(Checkpoints.Count - 1);
             CurrentTarget++;
         }
         else
         {
+            CheckpointsCleared = (float)CurrentTarget / (float)(Checkpoints.Count - 1);
             CurrentTarget = 0;
-            agent.SetDestination(UnclearedCheckpoints[CurrentTarget].position);
+            agent.SetDestination(Checkpoints[CurrentTarget].position);
             laps++;
         }
     }
