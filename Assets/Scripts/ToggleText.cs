@@ -3,23 +3,28 @@ using UnityEngine.InputSystem;
 using TMPro;
 public class ToggleText : MonoBehaviour
 {
+    //Input master list
     public InputActionAsset MasterList;
+    
+    //Various Inputs
     private InputAction showName;
     private InputAction showTasks;
 
+
+    //Text to toggle
     public GameObject nameText;
     public GameObject taskText;
 
+    //Restart Vars
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        showName = MasterList["ShowName"];
-        //nameText = GameObject.Find("Name");
 
+        showName = MasterList["ShowName"];
 
         showTasks = MasterList["ShowTasks"];
-        //taskText = GameObject.Find("Tasks");
+
     }
 
     // Update is called once per frame
@@ -34,5 +39,6 @@ public class ToggleText : MonoBehaviour
         {
             taskText.SetActive(!taskText.activeSelf);
         }
+
     }
 }

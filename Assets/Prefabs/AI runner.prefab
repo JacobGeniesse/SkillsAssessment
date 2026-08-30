@@ -152,13 +152,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunnerManager
   laps: 0
   stoppingDistance: 1
-  UnclearedCheckpoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  CurrentTarget: 0
+  CheckpointsCleared: 0
+  distanceToTarget: 0
+  Checkpoints: []
   agent: {fileID: 802209419804578067}
+  speed:
+  - 5
+  - 12
+  accel:
+  - 8
+  - 16
+  angleSpeed:
+  - 120
+  - 300

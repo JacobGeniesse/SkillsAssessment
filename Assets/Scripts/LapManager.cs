@@ -8,12 +8,14 @@ using UnityEngine;
 
 public class LapManager : MonoBehaviour
 {
+    private bool noDoubleDip = true; //Prevents a script from running twice.
+
     private TextMeshProUGUI placementText;
 
     public List<GameObject> Runners = new List<GameObject>();
     public List<RunnerManager> RunningComponents = new List<RunnerManager>();
 
-    public List<GameObject> CurrentPlacements = new List<GameObject>();
+    public List<RunnerManager> CurrentPlacements = new List<RunnerManager>();
     public List<float> PlacementScores = new List<float>();
 
 
@@ -31,10 +33,8 @@ public class LapManager : MonoBehaviour
         Runners = GameObject.FindGameObjectsWithTag("Runner").ToList();
         for(int i = 0; i < Runners.Count; i++)
         {
-            CurrentPlacements.Add(Runners[i]);
             PlacementScores.Add(0);
-
-            if(Runners[i].TryGetComponent<RunnerManager>(out RunnerManager holdingCell))
+            if (Runners[i].TryGetComponent<RunnerManager>(out RunnerManager holdingCell))
             {
                 RunningComponents.Add(holdingCell);
             }
@@ -43,68 +43,72 @@ public class LapManager : MonoBehaviour
                 Debug.LogWarning(Runners[i] + "was not counted for this race!");
             }
         }
-        //PlacementUpdate();
+        for (int i = 0; i < RunningComponents.Count; i++)
+        {
+            RunningComponents[i].RunnerID = i;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < PlacementScores.Count; i++)
+        if(noDoubleDip == true)
         {
-            CalcScore(i);
-            OrderScores();
-            TextUpdate();
+            noDoubleDip = false;
+            for (int i = 0; i < PlacementScores.Count; i++)
+            {
+                CalcScore(i);
+                OrderScores();
+                TextUpdate();
+            }
         }
     }
 
     private void CalcScore(int TargetRunner)
     {
-        PlacementScores[TargetRunner] = 0;  
-        for(int i =0; i < RunningComponents.Count; i++)
-        {
-            if (RunningComponents[TargetRunner].laps > RunningComponents[i].laps)
-            {
-                PlacementScores[TargetRunner] += 100f;
-            }
+            float tempScore = 0;
+            tempScore += 10f * RunningComponents[TargetRunner].Checkpoints.Count * RunningComponents[TargetRunner].laps;
 
-            if (RunningComponents[TargetRunner].CheckpointsCleared > RunningComponents[i].CheckpointsCleared)
-            {
-                PlacementScores[TargetRunner] += 10f;
-            }
+            tempScore += 10f * RunningComponents[TargetRunner].CheckpointsCleared;
 
-            if (RunningComponents[TargetRunner].distanceToTarget > RunningComponents[i].distanceToTarget)
+            for(int j = 0; j < PlacementScores.Count; j++)
             {
-                PlacementScores[TargetRunner] += 1f;
+                if (RunningComponents[TargetRunner].distanceToTarget < RunningComponents[j].distanceToTarget && RunningComponents[TargetRunner].distanceToTarget != float.PositiveInfinity)
+                {
+                    tempScore += 1f;
+                }
+                else
+                {
+                    tempScore -= 1f;
+                }
             }
-        }
+            PlacementScores[TargetRunner] = tempScore;
     }
 
     private void OrderScores()
     {
-        CurrentPlacements.Clear();
-        CurrentPlacements.Add(Runners[0]);
-        for(int i = 1; i < PlacementScores.Count; i++)
+        List<RunnerManager> orderingList = new List<RunnerManager>();
+        orderingList.Add(RunningComponents[0]);
+        for (int i = 1; i < PlacementScores.Count; i++)
         {
-            for(int j = 1; j < Runners.Count; j++)
+            for (int j = 0; j < orderingList.Count || j < RunningComponents.Count; j++)
             {
-                if (PlacementScores[i] > PlacementScores[j - 1])
+                if (PlacementScores[i] > PlacementScores[orderingList[j].RunnerID])
                 {
-                    if(j - 1 < CurrentPlacements.Count - 1)
-                    {
-                        CurrentPlacements.Insert(j - 1, Runners[i]);
-                    }
-                    else
-                    {
-                        CurrentPlacements.Add(Runners[i]);
-                    }
+                    //Debug.Log(Runners[i].name + PlacementScores[i] + " Vs " + Runners[orderingList[j].RunnerID].name + PlacementScores[orderingList[j].RunnerID]);
+                    orderingList.Insert(j, RunningComponents[i]);
                     break;
                 }
-                if (j == PlacementScores.Count - 1)
+                if(j == orderingList.Count - 1)
                 {
-                    CurrentPlacements.Add(Runners[i]);
+                    orderingList.Add(RunningComponents[i]);
+                    break;
                 }
             }
         }
+        //Debug.Log(orderingList[0] + ", " + orderingList[1] + ", " + orderingList[2] + ", " + orderingList[3]);
+
+        CurrentPlacements = orderingList;
     }
 
     private void TextUpdate()
@@ -117,6 +121,7 @@ public class LapManager : MonoBehaviour
         }
 
         placementText.text = FinalProduct;
+        noDoubleDip = true;
     }
 
     //Unused Scripts, I had to iterate through this to get to a solution that worked
