@@ -15,26 +15,24 @@ public class ToggleText : MonoBehaviour
     public GameObject nameText;
     public GameObject taskText;
 
-    //Restart Vars
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        //Assign input vars to their corressponding inputs
         showName = MasterList["ShowName"];
 
         showTasks = MasterList["ShowTasks"];
 
     }
 
-    // Update is called once per frame
     void Update()
     {
+        //Input handling for showing my name
         if (showName.WasReleasedThisFrame())
         {
             nameText.SetActive(!nameText.activeSelf);
         }
 
+        //Input handling for showing the tasks accomplished
         if (showTasks.WasReleasedThisFrame())
         {
             taskText.SetActive(!taskText.activeSelf);
